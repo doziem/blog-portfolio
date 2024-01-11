@@ -2,8 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
+import { Session } from 'next-auth';
+import { useSession } from 'next-auth/react';
 
 const Dashboard = () => {
+  const session = useSession();
   // const [data, setData] = useState([]);
   // const [error, setError] = useState(false);
   // const [isloading, setIsLoading] = useState(false);
@@ -31,8 +34,8 @@ const Dashboard = () => {
     'https://jsonplaceholder.typicode.com/posts',
     fetcher
   );
-
-  console.log('data', data);
+  console.log('Session:::', session);
+  // console.log('data', data);
   return <div>Dashboard</div>;
 };
 
