@@ -4,31 +4,47 @@ import connect from "@/utils/db";
 
 
 
+// export const GET = async (request) => {
+
+//     try {
+//         await connect()
+//         const post = await Post.find()
+//         console.log(process.env.MONGO_URL);
+
+//         return new NextResponse(post, { status: 200 })
+//     } catch (error) {
+//         return new NextResponse(error, { status: 500 })
+//     }
+// }
+
 export const GET = async (request) => {
+    const url = new URL(request.url);
+
+    const username = url.searchParams.get("username");
 
     try {
-        await connect()
-        const post = await Post.find()
-        console.log(process.env.MONGO_URL);
+        await connect();
 
-        return new NextResponse(post, { status: 200 })
-    } catch (error) {
-        return new NextResponse(error, { status: 500 })
+        const posts = await Post.find(username && { username });
+
+        return new NextResponse(JSON.stringify(posts), { status: 200 });
+    } catch (err) {
+        return new NextResponse("Database Error", { status: 500 });
     }
-}
+};
 
-// export const GET = async (request) => {
-//   const url = new URL(request.url);
+export const POST = async (request) => {
+    const body = await request.json();
 
-//   const username = url.searchParams.get("username");
+    const newPost = new Post(body);
 
-//   try {
-//     await connect();
+    try {
+        await connect();
 
-//     const posts = await Post.find(username && { username });
+        await newPost.save();
 
-//     return new NextResponse(JSON.stringify(posts), { status: 200 });
-//   } catch (err) {
-//     return new NextResponse("Database Error", { status: 500 });
-//   }
-// };
+        return new NextResponse("Post has been created", { status: 201 });
+    } catch (err) {
+        return new NextResponse("Database Error", { status: 500 });
+    }
+};
